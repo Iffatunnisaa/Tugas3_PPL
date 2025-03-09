@@ -1,0 +1,20 @@
+[
+    {
+      "id": 2,
+      "name": "Naruto",
+      "anime": "Naruto",
+      "age": 17
+    },
+    {
+      "id": 3,
+      "name": "Goku",
+      "anime": "Dragon Ball",
+      "age": 35
+    },
+    {
+      "id": 4,
+      "name": "luffy",
+      "anime": "one piece",
+      "age": 20
+    }
+  ]
