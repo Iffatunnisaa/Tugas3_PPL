@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Daftar Karakter</h1>
+        <div id="character-list"></div>
+
+        <h2>Tambah Karakter</h2>
+        <div class="form-group">
+            <input type="text" id="name" placeholder="Nama">
+            <input type="text" id="anime" placeholder="Anime">
+            <input type="number" id="age" placeholder="Usia">
+            <button class="add-btn" onclick="addCharacter()">Tambah</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            loadCharacters();
+        });
+
+        async function loadCharacters() {
+            const response = await fetch("/characters");
+            const data = await response.json();
+            const list = document.getElementById("character-list");
+
+            list.innerHTML = "";
+            data.data.forEach(character => {
+                const card = document.createElement("div");
+                card.classList.add("character-card");
+                card.innerHTML = `
+                    <div class="character-info">
+                        <h3>${character.name}</h3>
+                        <p>${character.anime} (Usia: ${character.age})</p>
+                    </div>
+                    <div class="actions">
+                        <button class="edit-btn" onclick="editCharacter(${character.id})">Edit</button>
+                        <button class="delete-btn" onclick="deleteCharacter(${character.id})">Hapus</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        async function addCharacter() {
+            const name = document.getElementById("name").value;
+            const anime = document.getElementById("anime").value;
+            const age = document.getElementById("age").value;
+
+            if (!name || !anime || !age) {
+                alert("Mohon isi semua kolom!");
+                return;
+            }
+
+            const response = await fetch("/characters", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, anime, age: parseInt(age) })
+            });
+
+            if (response.ok) {
+                alert("Karakter berhasil ditambahkan!");
+                loadCharacters();
+            } else {
+                alert("Gagal menambahkan karakter.");
+            }
+        }
+
+        async function editCharacter(id) {
+            const newName = prompt("Masukkan nama baru:");
+            const newAnime = prompt("Masukkan anime baru:");
+            const newAge = prompt("Masukkan usia baru:");
+
+            if (!newName || !newAnime || !newAge) {
+                alert("Semua kolom harus diisi!");
+                return;
+            }
+
+            const response = await fetch(`/characters/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: newName, anime: newAnime, age: parseInt(newAge) })
+            });
+
+            if (response.ok) {
+                alert("Karakter berhasil diperbarui!");
+                loadCharacters();
+            } else {
+                alert("Gagal memperbarui karakter.");
+            }
+        }
+
+        async function deleteCharacter(id) {
+            if (!confirm("Apakah Anda yakin ingin menghapus karakter ini?")) return;
+
+            const response = await fetch(`/characters/${id}`, { method: "DELETE" });
+
+            if (response.ok) {
+                alert("Karakter berhasil dihapus!");
+                loadCharacters();
+            } else {
+                alert("Gagal menghapus karakter.");
+            }
+        }
+    </script>
+</body>
+</html>
 
